@@ -34,13 +34,17 @@ async function run() {
     await client.connect();
 
     //database connection:
-    const database = client.db("usersDB");
-    const usersCollection = database.collection("usersCollection");
+    // const database = client.db("usersDB");
+    // const userCollection = database.collection("users");
+
+    //database connection in one-line:
+    const database = client.db("usersDB").collection("users");
 
     //post api:
-    app.post("/users", (req, res) => {
-      const user = req.body;
-      const result = usersCollection.insertOne(user);
+    app.post("/users", async(req, res) => {
+      const user = await req.body;
+      // const result = await userCollection.insertOne(user);
+      const result = await database.insertOne(user);
       res.send(result);
       console.log(user);
     });
