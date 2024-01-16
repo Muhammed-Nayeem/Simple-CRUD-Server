@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -11,7 +11,8 @@ app.use(express.json());
 //mdb:
 // mohammednayeem808
 // 8i3kci1eCMDN8Odt
-const uri = "mongodb+srv://mohammednayeem808:8i3kci1eCMDN8Odt@cluster0.fyclago.mongodb.net/?retryWrites=true&w=majority";
+const uri =
+  "mongodb+srv://mohammednayeem808:8i3kci1eCMDN8Odt@cluster0.fyclago.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -19,7 +20,7 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 //root navigation url api:
@@ -41,14 +42,14 @@ async function run() {
     const usersCollection = client.db("usersDB").collection("users");
 
     //get api:
-    app.get("/users", async(req, res) => {
+    app.get("/users", async (req, res) => {
       const cursor = usersCollection.find();
       const users = await cursor.toArray();
       res.send(users);
     });
 
     //post api:
-    app.post("/users", async(req, res) => {
+    app.post("/users", async (req, res) => {
       const user = await req.body;
       // const result = await userCollection.insertOne(user);
       const result = await usersCollection.insertOne(user);
@@ -56,9 +57,19 @@ async function run() {
       console.log(user);
     });
 
+    //delete api:
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
